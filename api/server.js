@@ -9,6 +9,7 @@ import reviewRoute from "./routes/review.route.js";
 import userRoute from "./routes/user.route.js";
 import authRoute from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const url = process.env.MONGODB;
 const app = express();
 mongoose.set("strictQuery", true);
 
+app.use(cors({ origin: "http://localhost:5173", Credential: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -36,6 +38,12 @@ const connect = async () => {
     console.log(error);
   }
 };
+
+app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Something went wrong";
+  return res.status(errorStatus).send(errorMessage);
+});
 
 app.listen(3000, () => {
   connect();
